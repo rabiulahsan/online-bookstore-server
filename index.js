@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { run } = require("./utils/dbconnection");
+const userRoutes = require("./routes/usersRoute");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -10,9 +11,10 @@ app.use(cors());
 app.use(express.json());
 
 run();
-//routes
 
-//test
+//routes
+app.use("/api/users", userRoutes);
+
 //test
 app.get("/", (req, res) => {
   res.send("Server is running....");
