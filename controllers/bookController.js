@@ -69,4 +69,21 @@ const updateBook = async (req, res) => {
   }
 };
 
-module.exports = { getAllBooks, postBook, updateBook };
+const deleteBook = async (req, res) => {
+  const bookId = req.params.bookId;
+
+  try {
+    const query = { _id: new ObjectId(String(bookId)) };
+    const result = await booksCollection.deleteOne(query);
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Book not found" });
+    } else {
+      return res.json({ message: "Book deleted successfully", result });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting book", error });
+  }
+};
+
+module.exports = { getAllBooks, postBook, updateBook, deleteBook };
