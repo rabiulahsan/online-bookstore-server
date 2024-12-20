@@ -42,4 +42,31 @@ const postBook = async (req, res) => {
   }
 };
 
-module.exports = { getAllBooks, postBook };
+const updateBook = async (req, res) => {
+  try {
+    const bookId = req.params.bookId;
+    const updatedData = req.body;
+
+    // Add `updated_at` timestamp to the update data
+    updatedData.updated_at = new Date();
+    console.log(updatedData);
+
+    // Update the book in the collection
+    const result = await booksCollection.updateOne(
+      { _id: new ObjectId(String(bookId)) }, // Filter by the book's ID
+      { $set: updatedData }, // Set the updated fields
+      { upsert: true }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.json({ message: "Book updated successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating book", error });
+  }
+};
+
+module.exports = { getAllBooks, postBook, updateBook };
