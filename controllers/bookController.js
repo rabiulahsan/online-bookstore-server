@@ -3,6 +3,9 @@ const { db } = require("../utils/dbconnection");
 const { ObjectId } = require("mongodb");
 const booksCollection = db.collection("books");
 
+// Ensure index creation for category
+booksCollection.createIndex({ category: 1 }); // Create an index on the "category" field
+
 // get all books
 const getAllBooks = async (req, res) => {
   try {
@@ -112,10 +115,40 @@ const deleteBook = async (req, res) => {
   }
 };
 
+// Filter books by category (supports multiple categories)
+const getBooksByCategory = async (req, res) => {
+  const { categories } = req.query; // Example: ?categories=Adventure,Fantasy
+
+  try {
+    // Parse categories from query string
+    const categoryArray = categories ? categories.split(",") : [];
+
+    // Build query based on provided categories
+    const query = categoryArray.length
+      ? { category: { $in: categoryArray } }
+      : {};
+
+    // Fetch books matching the query
+    const books = await booksCollection.find(query).toArray();
+
+    //test the indexing on query
+    // const explainResult = await booksCollection
+    //   .find(query)
+    //   .explain("executionStats");
+    // console.log(JSON.stringify(explainResult, null, 2));
+
+    res.json({ message: "Books fetched successfully", data: books });
+  } catch (error) {
+    console.error("Error fetching books by category:", error);
+    res.status(500).json({ message: "Error fetching books", error });
+  }
+};
+
 module.exports = {
   getAllBooks,
   postBook,
   updateBook,
   deleteBook,
   getSingleBook,
+  getBooksByCategory,
 };
