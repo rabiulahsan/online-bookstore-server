@@ -1,10 +1,9 @@
 const express = require("express");
-const verifyUser = require("../utils/verifyUser");
 const verifyJWT = require("../utils/verifyJWT");
 const { getAllFavs } = require("../controllers/favController");
 
 const router = express.Router();
 
-router.get("/getall", verifyJWT, verifyUser, getAllFavs);
+router.get("/getall/:userId", verifyJWT, getAllFavs);
 
 module.exports = router;
