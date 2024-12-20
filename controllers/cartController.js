@@ -86,11 +86,48 @@ const addItemToCart = async (req, res) => {
     );
 
     // Return the updated cart
-    res.status(200).json(cart);
+    res.status(200).json({ result, data: cart });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Something went wrong!" });
   }
 };
 
-module.exports = { getAllCarts, addItemToCart };
+//remove item from cart
+const removeitemFromCart = async (req, res) => {
+  const { userId, bookId } = req.body;
+
+  try {
+    // Find the user's cart
+    const cart = await cartsCollection.findOne({ userId: ObjectId(userId) });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Filter out the item to remove
+    const updatedItems = cart.items.filter(
+      (item) => item.bookId.toString() !== bookId
+    );
+
+    // Calculate the new total price
+    const totalPrice = updatedItems.reduce(
+      (sum, item) => sum + item.quantity * item.price,
+      0
+    );
+
+    // Update the cart in the database
+    const result = await cartsCollection.updateOne(
+      { userId: ObjectId(userId) },
+      { $set: { items: updatedItems, totalPrice } }
+    );
+
+    // Send the updated cart as a response
+    res.status(200).json({ items: updatedItems, totalPrice });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+};
+
+module.exports = { getAllCarts, addItemToCart, removeitemFromCart };
