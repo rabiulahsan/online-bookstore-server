@@ -40,4 +40,20 @@ const postUser = async (req, res) => {
       .send({ message: "An error occurred", error: error.message });
   }
 };
-module.exports = { getAllUsers, postUser };
+
+//get user role by email query
+const isUser = async (req, res) => {
+  const email = req.query.email;
+  // console.log(email);
+
+  // console.log(req.decoded);
+  if (req.decoded.email !== email) {
+    return res.send({ isUser: false });
+  }
+
+  const query = { email: email };
+  const user = await usersCollection.findOne(query);
+  const result = { isUser: user?.role === "user" };
+  res.send(result);
+};
+module.exports = { getAllUsers, postUser, isUser };
