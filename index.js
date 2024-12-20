@@ -8,6 +8,7 @@ const authorRoute = require("./routes/authorRoute");
 const verifyJWT = require("./utils/verifyJWT");
 const verifyAuthor = require("./utils/verifyAuthor");
 const verifyUser = require("./utils/verifyUser");
+const bookRoute = require("./routes/booksRoute");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -21,6 +22,7 @@ run();
 app.use("/jwt", jwtRoute);
 app.use("/api/users", userRoutes);
 app.use("/api/authors", authorRoute);
+app.use("/api/books", bookRoute);
 
 //test
 app.get("/", (req, res) => {

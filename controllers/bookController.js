@@ -19,14 +19,18 @@ const getAllBooks = async (req, res) => {
 const postBook = async (req, res) => {
   const newBook = req.body;
 
+  // Add the created_at field with the current ISO timestamp
+  newBook.created_at = new Date().toISOString();
+  console.log(newBook);
   try {
-    // Insert new doctor
+    // Insert the new book
     const result = await booksCollection.insertOne(newBook);
 
     if (result.insertedId) {
       res.status(201).send({
         message: "New book created successfully",
         bookId: result.insertedId,
+        created_at: newBook.created_at, // Optionally return the timestamp
       });
     } else {
       res.status(500).send({ message: "Failed to create book" });
