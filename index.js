@@ -4,6 +4,7 @@ const cors = require("cors");
 const { run } = require("./utils/dbconnection");
 const userRoutes = require("./routes/usersRoute");
 const jwtRoute = require("./routes/jwtRoute");
+const authorRoute = require("./routes/authorRoute");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -16,6 +17,7 @@ run();
 //routes
 app.use("/jwt", jwtRoute);
 app.use("/api/users", userRoutes);
+app.use("/api/authors", authorRoute);
 
 //test
 app.get("/", (req, res) => {
