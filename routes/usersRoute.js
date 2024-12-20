@@ -12,4 +12,5 @@ router.get("/getallusers", getAllUsers);
 router.post("/postuser", postUser);
 router.get("/role", verifyJWT, isUser);
 router.get("/getsingleuser/:id", getSingleUser);
+
 module.exports = router;
