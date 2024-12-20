@@ -41,6 +41,31 @@ const postUser = async (req, res) => {
   }
 };
 
+//get a specific user
+const getSingleUser = async (req, res) => {
+  const id = req.params.id;
+
+  if (!id) {
+    return res.status(400).send({ message: "Id is required" });
+  }
+
+  const query = { _id: new ObjectId(String(id)) }; // Simplified query object creation
+  //   console.log("Query:", query);
+
+  try {
+    const user = await usersCollection.findOne(query); // Find user by email
+    if (user) {
+      res.status(200).send(user); // Send user data if found
+    } else {
+      res.status(404).send({ message: "User not found" }); // Handle if user is not found
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "An error occurred", error: error.message });
+  }
+};
+
 //get user role by email query
 const isUser = async (req, res) => {
   const email = req.query.email;
@@ -56,4 +81,4 @@ const isUser = async (req, res) => {
   const result = { isUser: user?.role === "user" };
   res.send(result);
 };
-module.exports = { getAllUsers, postUser, isUser };
+module.exports = { getAllUsers, postUser, isUser, getSingleUser };
