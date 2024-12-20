@@ -43,13 +43,13 @@ const postUser = async (req, res) => {
 
 //get a specific user
 const getSingleUser = async (req, res) => {
-  const id = req.params.id;
+  const userId = req.params.userId;
 
-  if (!id) {
+  if (!userId) {
     return res.status(400).send({ message: "Id is required" });
   }
 
-  const query = { _id: new ObjectId(String(id)) }; // Simplified query object creation
+  const query = { _id: new ObjectId(String(userId)) }; // Simplified query object creation
   //   console.log("Query:", query);
 
   try {

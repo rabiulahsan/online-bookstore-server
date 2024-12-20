@@ -42,6 +42,29 @@ const postBook = async (req, res) => {
   }
 };
 
+//get a single book
+
+const getSingleBook = async (req, res) => {
+  const bookId = req.params.bookId;
+  if (!bookId) {
+    return res.status(400).send({ message: "Book ID is required" });
+  }
+
+  const query = { _id: new ObjectId(String(bookId)) }; // Simplified query object creation
+  try {
+    const book = await booksCollection.findOne(query); // Find book by ID in the collection using the query object
+    if (book) {
+      res.status(200).send(book); // Send book data if found
+    } else {
+      res.status(404).send({ message: "Book not found" }); // Handle if book is not found
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "An error occurred", error: error.message });
+  }
+};
+
 // Update a book
 const updateBook = async (req, res) => {
   try {
@@ -89,4 +112,10 @@ const deleteBook = async (req, res) => {
   }
 };
 
-module.exports = { getAllBooks, postBook, updateBook, deleteBook };
+module.exports = {
+  getAllBooks,
+  postBook,
+  updateBook,
+  deleteBook,
+  getSingleBook,
+};
