@@ -83,4 +83,37 @@ const isAuthor = async (req, res) => {
   res.send(result);
 };
 
-module.exports = { getAllAuthors, postAuthor, getSingleAuthor, isAuthor };
+const updateAuthor = async (req, res) => {
+  try {
+    const authorId = req.params.authorId;
+    const updatedAuthor = req.body;
+
+    // Add `updated_at` timestamp to the update data
+    updatedAuthor.updated_at = new Date();
+    // console.log(updatedAuthor);
+
+    // Update the book in the collection
+    const result = await authorsCollection.updateOne(
+      { _id: new ObjectId(String(authorId)) }, // Filter by the book's ID
+      { $set: updatedAuthor }, // Set the updated fields
+      { upsert: true }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Author not found" });
+    }
+
+    res.json({ message: "Author updated successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating Author", error });
+  }
+};
+
+module.exports = {
+  getAllAuthors,
+  postAuthor,
+  getSingleAuthor,
+  isAuthor,
+  updateAuthor,
+};
