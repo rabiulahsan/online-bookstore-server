@@ -5,6 +5,6 @@ const { getAllCarts } = require("../controllers/cartController");
 
 const router = express.Router();
 
-router.get("/getallcarts", verifyJWT, verifyUser, getAllCarts);
+router.get("/getall/:userId", verifyJWT, verifyUser, getAllCarts);
 
 module.exports = router;
