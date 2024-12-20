@@ -69,9 +69,6 @@ const getSingleAuthor = async (req, res) => {
 const isAuthor = async (req, res) => {
   const email = req.query.email;
 
-  // console.log(email);
-  // console.log(req.decoded);
-
   if (req.decoded.email !== email) {
     return res.send({ isAuthor: false });
   }
@@ -83,6 +80,7 @@ const isAuthor = async (req, res) => {
   res.send(result);
 };
 
+//api for updating a author
 const updateAuthor = async (req, res) => {
   try {
     const authorId = req.params.authorId;
@@ -110,10 +108,29 @@ const updateAuthor = async (req, res) => {
   }
 };
 
+//delete a author
+const deleteAuthor = async (req, res) => {
+  const authorId = req.params.authorId;
+
+  try {
+    const query = { _id: new ObjectId(String(authorId)) };
+    const result = await authorsCollection.deleteOne(query);
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Author not found" });
+    } else {
+      return res.json({ message: "Author deleted successfully", result });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting author", error });
+  }
+};
+
 module.exports = {
   getAllAuthors,
   postAuthor,
   getSingleAuthor,
   isAuthor,
   updateAuthor,
+  deleteAuthor,
 };

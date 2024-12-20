@@ -42,6 +42,7 @@ const postBook = async (req, res) => {
   }
 };
 
+// Update a book
 const updateBook = async (req, res) => {
   try {
     const bookId = req.params.bookId;
@@ -68,6 +69,8 @@ const updateBook = async (req, res) => {
     res.status(500).json({ message: "Error updating book", error });
   }
 };
+
+// Delete a book
 
 const deleteBook = async (req, res) => {
   const bookId = req.params.bookId;
