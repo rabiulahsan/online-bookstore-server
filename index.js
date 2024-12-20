@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const { run } = require("./utils/dbconnection");
 const userRoutes = require("./routes/usersRoute");
+const jwtRoute = require("./routes/jwtRoute");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -13,6 +14,7 @@ app.use(express.json());
 run();
 
 //routes
+app.use("/jwt", jwtRoute);
 app.use("/api/users", userRoutes);
 
 //test
