@@ -90,9 +90,9 @@ const updateAuthor = async (req, res) => {
     updatedAuthor.updated_at = new Date();
     // console.log(updatedAuthor);
 
-    // Update the book in the collection
+    // Update the author in the collection
     const result = await authorsCollection.updateOne(
-      { _id: new ObjectId(String(authorId)) }, // Filter by the book's ID
+      { _id: new ObjectId(String(authorId)) }, // Filter by the authors's ID
       { $set: updatedAuthor }, // Set the updated fields
       { upsert: true }
     );

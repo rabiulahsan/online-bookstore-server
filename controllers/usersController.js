@@ -69,9 +69,7 @@ const getSingleUser = async (req, res) => {
 //get user role by email query
 const isUser = async (req, res) => {
   const email = req.query.email;
-  // console.log(email);
 
-  // console.log(req.decoded);
   if (req.decoded.email !== email) {
     return res.send({ isUser: false });
   }
@@ -81,4 +79,42 @@ const isUser = async (req, res) => {
   const result = { isUser: user?.role === "user" };
   res.send(result);
 };
-module.exports = { getAllUsers, postUser, isUser, getSingleUser };
+
+//update a user
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const updatedData = req.body;
+
+    // Add `updated_at` timestamp to the update data
+    updatedData.updated_at = new Date();
+    console.log(updatedData);
+
+    // Update the user in the collection
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(String(userId)) }, // Filter by the user's ID
+      { $set: updatedData }, // Set the updated fields
+      { upsert: true }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User updated successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating User", error });
+  }
+};
+
+//delete a user
+const deleteUser = async (req, res) => {};
+module.exports = {
+  getAllUsers,
+  postUser,
+  isUser,
+  getSingleUser,
+  updateUser,
+  deleteUser,
+};
