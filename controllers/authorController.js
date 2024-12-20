@@ -35,7 +35,7 @@ const postAuthor = async (req, res) => {
         authorId: result.insertedId,
       });
     } else {
-      res.status(500).send({ message: "Failed to create doctor" });
+      res.status(500).send({ message: "Failed to create author" });
     }
   } catch (error) {
     res
