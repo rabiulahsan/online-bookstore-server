@@ -17,23 +17,15 @@ const getAllFavs = async (req, res) => {
 
 //add new fav
 const addFav = async (req, res) => {
-  const {
-    userId,
-    bookId,
-    title,
-    author,
-    image,
-    tags,
-    category,
-    rating,
-    price,
-    discount,
-  } = req.body;
+  const { _id, title, author, image, tags, category, rating, price, discount } =
+    req.body;
+
+  const userId = req.params.userId;
 
   try {
     // Build the new bookmark
     const newBookmark = {
-      bookId,
+      bookId: _id,
       title,
       image,
       author,
@@ -42,6 +34,7 @@ const addFav = async (req, res) => {
       tags: tags || [], // Default to empty array if tags are not provided
       category: category || [], // Default to empty string if notes are not provided
       discount,
+      saved: true,
     };
 
     newBookmark.created_at = new Date().toISOString();
@@ -63,6 +56,7 @@ const addFav = async (req, res) => {
 //remove from fav
 const removeFav = async (req, res) => {
   const { userId, bookId } = req.params;
+  console.log(bookId);
 
   try {
     // Remove the bookmark

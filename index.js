@@ -11,6 +11,7 @@ const verifyUser = require("./utils/verifyUser");
 const bookRoute = require("./routes/booksRoute");
 const cartRoute = require("./routes/cartsRoute");
 const favRoute = require("./routes/favRoute");
+const adminRoute = require("./routes/adminRoute");
 
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use("/api/authors", authorRoute);
 app.use("/api/books", bookRoute);
 app.use("/api/carts", cartRoute); //todo
 app.use("/api/favs", favRoute);
+app.use("/api/admins", adminRoute);
 
 //test
 app.get("/", (req, res) => {
