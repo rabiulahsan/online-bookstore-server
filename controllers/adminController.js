@@ -12,4 +12,15 @@ const getAllAdmins = async (req, res) => {
   }
 };
 
-module.exports = { getAllAdmins };
+const isAdmin = async (req, res) => {
+  const email = req.query.email;
+  if (req.decoded.email !== email) {
+    return res.send({ isAdmin: false });
+  }
+  const query = { email: email };
+  const user = await adminsCollection.findOne(query);
+  const result = { isUser: user?.role === "admin" };
+  res.send(result);
+};
+
+module.exports = { getAllAdmins, isAdmin };
