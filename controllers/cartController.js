@@ -22,71 +22,43 @@ const getAllCarts = async (req, res) => {
 
 //add item to cart
 const addItemToCart = async (req, res) => {
-  const { userId, bookId, title, quantity, price, image } = req.body;
-
+  const userId = req.params.userId;
+  const newItem = req.body;
+  const query = { userId: new ObjectId(String(userId)) };
   try {
-    // Find the user's cart
-    let cart = await cartsCollection.findOne({ userId: ObjectId(userId) });
+    let cart = await cartsCollection.findOne(query);
 
-    // If the cart doesn't exist, create a new one
-    if (!cart) {
-      const newCart = {
-        userId: ObjectId(userId),
-        items: [
-          {
-            bookId: ObjectId(bookId),
-            title,
-            quantity,
-            price,
-            image,
-          },
-        ],
-      };
+    console.log(cart);
+    console.log(newItem);
 
-      await cartsCollection.insertOne(newCart);
-      return res.status(201).json(newCart);
-    }
+    // If cart exists, update it by adding the item
+    if (cart) {
+      const itemExists = cart.items.some(
+        (item) => item.bookId === newItem.bookId
+      );
 
-    // If the cart exists, check if the item is already in the cart
-    const existingItem = cart.items.find(
-      (item) => item.bookId.toString() === bookId
-    );
-
-    if (existingItem) {
-      // Update the quantity of the existing item
-      existingItem.quantity += quantity;
-
-      // Remove the item if the quantity becomes 0 or less
-      if (existingItem.quantity <= 0) {
-        cart.items = cart.items.filter(
-          (item) => item.bookId.toString() !== bookId
-        );
+      if (itemExists) {
+        return res
+          .status(409)
+          .send({ message: "Item is already in the cart." });
       }
-    } else {
-      // Add the new item to the cart
-      cart.items.push({
-        bookId: ObjectId(bookId),
-        title,
-        quantity,
-        price,
-        image,
-      });
+
+      const result = await cartsCollection.updateOne(
+        { userId: new ObjectId(String(userId)) },
+        { $push: { items: newItem } }
+      );
+
+      return res.status(200).json({ message: "Item added to cart :", result });
     }
 
-    // Recalculate the total price
-    const totalPrice = cart.items.reduce(
-      (sum, item) => sum + item.quantity * item.price,
-      0
-    );
+    // If cart doesn't exist, create a new one
+    const newCart = {
+      userId: new ObjectId(String(userId)),
+      items: [newItem], // Ensure it's an array
+    };
 
-    // Update the cart with the modified items and total price
-    await cartsCollection.updateOne(
-      { userId: ObjectId(userId) },
-      { $set: { items: cart.items, totalPrice } }
-    );
-
-    // Return the updated cart
-    res.status(200).json({ result, data: cart });
+    const result = await cartsCollection.insertOne(newCart);
+    return res.status(201).json({ message: "Item added to cart :", result });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Something went wrong!" });

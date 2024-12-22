@@ -19,7 +19,7 @@ const isAdmin = async (req, res) => {
   }
   const query = { email: email };
   const user = await adminsCollection.findOne(query);
-  const result = { isUser: user?.role === "admin" };
+  const result = { isAdmin: user?.role === "admin" };
   res.send(result);
 };
 
