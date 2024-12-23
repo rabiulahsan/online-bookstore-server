@@ -139,8 +139,38 @@ const getBooksByCategory = async (req, res) => {
 
     res.json({ message: "Books fetched successfully", data: books });
   } catch (error) {
-    console.error("Error fetching books by category:", error);
+    console.log("Error fetching books by category:", error);
     res.status(500).json({ message: "Error fetching books", error });
+  }
+};
+
+//get book of specific author
+const getAuthorBooks = async (req, res) => {
+  const authorId = req.params.authorId;
+  console.log(authorId);
+
+  try {
+    // Build the query to find books by the author's ID
+    const query = { authorId: new ObjectId(String(authorId)) };
+
+    // Fetch the books from the collection
+    const result = await booksCollection.find(query).toArray();
+    console.log(result);
+
+    // Check if any books are found
+    if (!result || result.length === 0) {
+      return res
+        .status(404)
+        .send({ message: "No Books Found for this author." });
+    }
+
+    // Send the result if books are found
+    res.status(200).send({ message: "Books found.", data: result });
+  } catch (error) {
+    // Handle errors
+    res
+      .status(500)
+      .send({ message: "An error occurred", error: error.message });
   }
 };
 
@@ -151,4 +181,5 @@ module.exports = {
   deleteBook,
   getSingleBook,
   getBooksByCategory,
+  getAuthorBooks,
 };

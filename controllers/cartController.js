@@ -7,7 +7,9 @@ const getAllCarts = async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    const cart = await cartsCollection.findOne({ userId: ObjectId(userId) });
+    const cart = await cartsCollection.findOne({
+      userId: new ObjectId(String(userId)),
+    });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -15,7 +17,7 @@ const getAllCarts = async (req, res) => {
 
     res.status(200).json(cart);
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -28,8 +30,8 @@ const addItemToCart = async (req, res) => {
   try {
     let cart = await cartsCollection.findOne(query);
 
-    console.log(cart);
-    console.log(newItem);
+    // console.log(cart);
+    // console.log(newItem);
 
     // If cart exists, update it by adding the item
     if (cart) {
@@ -60,7 +62,7 @@ const addItemToCart = async (req, res) => {
     const result = await cartsCollection.insertOne(newCart);
     return res.status(201).json({ message: "Item added to cart :", result });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ error: "Something went wrong!" });
   }
 };
