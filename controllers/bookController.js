@@ -32,6 +32,7 @@ const postBook = async (req, res) => {
     if (result.insertedId) {
       res.status(201).send({
         message: "New book created successfully",
+        data: result,
         bookId: result.insertedId,
         created_at: newBook.created_at, // Optionally return the timestamp
       });
@@ -151,14 +152,14 @@ const getAuthorBooks = async (req, res) => {
 
   try {
     // Build the query to find books by the author's ID
-    const query = { authorId: new ObjectId(String(authorId)) };
-
+    const query = { authorId: authorId };
+    console.log(query);
     // Fetch the books from the collection
     const result = await booksCollection.find(query).toArray();
     console.log(result);
 
     // Check if any books are found
-    if (!result || result.length === 0) {
+    if (!result) {
       return res
         .status(404)
         .send({ message: "No Books Found for this author." });
