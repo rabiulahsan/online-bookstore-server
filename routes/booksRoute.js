@@ -18,6 +18,6 @@ router.get("/getsinglebook/:bookId", getSingleBook);
 router.get("/getbook/:authorId", getAuthorBooks);
 router.post("/postbook", verifyJWT, verifyAuthor, postBook);
 router.put("/updatebook/:bookId", verifyJWT, verifyAuthor, updateBook);
-router.delete("/deletebook/:bookId", verifyJWT, verifyAuthor, deleteBook); //todo verify by admin and author
+router.delete("/deletebook/:bookId", verifyJWT, deleteBook); //todo verify by admin and author
 
 module.exports = router;

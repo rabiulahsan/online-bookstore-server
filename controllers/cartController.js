@@ -5,15 +5,15 @@ const cartsCollection = db.collection("carts");
 // get all carts
 const getAllCarts = async (req, res) => {
   const userId = req.params.userId;
-
+  console.log(userId);
   try {
     const cart = await cartsCollection.findOne({
       userId: new ObjectId(String(userId)),
     });
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
+    // if (!cart) {
+    //   return res.status(404).json({ message: "Cart not found" });
+    // }
 
     res.status(200).json(cart);
   } catch (error) {
@@ -69,20 +69,20 @@ const addItemToCart = async (req, res) => {
 
 //remove item from cart
 const removeitemFromCart = async (req, res) => {
-  const { userId, bookId } = req.body;
+  const { userId, bookId } = req.params;
 
   try {
     // Find the user's cart
-    const cart = await cartsCollection.findOne({ userId: ObjectId(userId) });
+    const cart = await cartsCollection.findOne({
+      userId: new ObjectId(String(userId)),
+    });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
     // Filter out the item to remove
-    const updatedItems = cart.items.filter(
-      (item) => item.bookId.toString() !== bookId
-    );
+    const updatedItems = cart.items.filter((item) => item.bookId !== bookId);
 
     // Calculate the new total price
     const totalPrice = updatedItems.reduce(
@@ -92,7 +92,7 @@ const removeitemFromCart = async (req, res) => {
 
     // Update the cart in the database
     const result = await cartsCollection.updateOne(
-      { userId: ObjectId(userId) },
+      { userId: new ObjectId(String(userId)) },
       { $set: { items: updatedItems, totalPrice } }
     );
 
