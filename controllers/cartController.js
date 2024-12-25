@@ -5,7 +5,7 @@ const cartsCollection = db.collection("carts");
 // get all carts
 const getAllCarts = async (req, res) => {
   const userId = req.params.userId;
-  console.log(userId);
+  // console.log(userId);
   try {
     const cart = await cartsCollection.findOne({
       userId: new ObjectId(String(userId)),

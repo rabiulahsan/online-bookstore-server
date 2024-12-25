@@ -31,22 +31,34 @@ const addFav = async (req, res) => {
       author,
       rating,
       price,
-      tags: tags || [], // Default to empty array if tags are not provided
-      category: category || [], // Default to empty string if notes are not provided
+      tags: tags || [],
+      category: category || [],
       discount,
       saved: true,
+      created_at: new Date().toISOString(),
     };
-
-    newBookmark.created_at = new Date().toISOString();
 
     // Add the new bookmark to the user's favorites
     const result = await favoritesCollection.updateOne(
-      { userId: userId }, // Filter by userId
-      { $push: { bookmarks: newBookmark } }, // Push the new bookmark to bookmarks array
-      { upsert: true } // Create a new document if it doesn't exist
+      { userId: userId },
+      {
+        $push: {
+          bookmarks: newBookmark,
+          bookmarksIdArray: _id,
+        },
+      },
+      { upsert: true }
     );
 
-    res.json({ message: "Favorite added successfully", result });
+    // Fetch the updated favorites
+    const updatedFavorites = await favoritesCollection.findOne({
+      userId: userId,
+    });
+
+    res.json({
+      message: "Favorite added successfully",
+      result,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error adding favorite", error });
@@ -62,7 +74,7 @@ const removeFav = async (req, res) => {
     // Remove the bookmark
     const result = await favoritesCollection.updateOne(
       { userId: userId }, // Filter by userId
-      { $pull: { bookmarks: { bookId: bookId } } } // Remove the matching bookmark
+      { $pull: { bookmarks: { bookId: bookId }, bookmarksIdArray: bookId } } // Remove the matching bookmark
     );
 
     if (result.modifiedCount === 0) {
