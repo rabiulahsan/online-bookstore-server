@@ -74,6 +74,7 @@ const updateBook = async (req, res) => {
   try {
     const bookId = req.params.bookId;
     const updatedData = req.body;
+    console.log(bookId);
 
     // Add `updated_at` timestamp to the update data
     updatedData.updated_at = new Date();

@@ -27,11 +27,9 @@ const addItemToCart = async (req, res) => {
   const userId = req.params.userId;
   const newItem = req.body;
   const query = { userId: new ObjectId(String(userId)) };
+
   try {
     let cart = await cartsCollection.findOne(query);
-
-    // console.log(cart);
-    // console.log(newItem);
 
     // If cart exists, update it by adding the item
     if (cart) {
@@ -45,9 +43,12 @@ const addItemToCart = async (req, res) => {
           .send({ message: "Item is already in the cart." });
       }
 
+      // Update the cart to add the new item and update the itemsIdArray
       const result = await cartsCollection.updateOne(
         { userId: new ObjectId(String(userId)) },
-        { $push: { items: newItem } }
+        {
+          $push: { items: newItem, itemsIdArray: newItem.bookId },
+        }
       );
 
       return res.status(200).json({ message: "Item added to cart :", result });
@@ -57,6 +58,7 @@ const addItemToCart = async (req, res) => {
     const newCart = {
       userId: new ObjectId(String(userId)),
       items: [newItem], // Ensure it's an array
+      itemsIdArray: [newItem.bookId], // Initialize with the bookId of the first item
     };
 
     const result = await cartsCollection.insertOne(newCart);
@@ -83,21 +85,25 @@ const removeitemFromCart = async (req, res) => {
 
     // Filter out the item to remove
     const updatedItems = cart.items.filter((item) => item.bookId !== bookId);
-
-    // Calculate the new total price
-    const totalPrice = updatedItems.reduce(
-      (sum, item) => sum + item.quantity * item.price,
-      0
+    const updatedItemsIdArray = cart.itemsIdArray.filter(
+      (itemId) => itemId !== bookId
     );
 
     // Update the cart in the database
     const result = await cartsCollection.updateOne(
       { userId: new ObjectId(String(userId)) },
-      { $set: { items: updatedItems, totalPrice } }
+      {
+        $set: {
+          items: updatedItems,
+          itemsIdArray: updatedItemsIdArray,
+        },
+      }
     );
 
     // Send the updated cart as a response
-    res.status(200).json({ items: updatedItems, totalPrice });
+    res
+      .status(200)
+      .json({ items: updatedItems, itemsIdArray: updatedItemsIdArray });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Something went wrong!" });
