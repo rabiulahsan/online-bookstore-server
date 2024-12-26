@@ -16,16 +16,17 @@ const getAllUsers = async (req, res) => {
 const postUser = async (req, res) => {
   const newUser = req.body;
   const query = { email: newUser.email };
-  // console.log(query);
+  console.log(query);
   try {
     // Check if the user already exists
     const exist = await usersCollection.findOne(query);
+    console.log(exist);
     if (exist) {
       return res.status(409).send({ message: "User already exists" });
     }
     // Insert new user
     const result = await usersCollection.insertOne(newUser);
-
+    console.log(result);
     if (result.insertedId) {
       res.status(201).send({
         message: "User created successfully",
