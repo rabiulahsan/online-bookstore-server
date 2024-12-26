@@ -5,6 +5,7 @@ const {
   getAllCarts,
   addItemToCart,
   removeitemFromCart,
+  deleteAll,
 } = require("../controllers/cartController");
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.delete(
   verifyUser,
   removeitemFromCart
 );
+router.delete("/deletecart/:userId", verifyJWT, verifyUser, deleteAll);
 
 module.exports = router;

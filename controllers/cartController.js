@@ -22,6 +22,25 @@ const getAllCarts = async (req, res) => {
   }
 };
 
+//delete user cart all items
+const deleteAll = async (req, res) => {
+  const userId = req.params.userId;
+  console.log(userId);
+  try {
+    const query = { userId: new ObjectId(String(userId)) };
+    const result = await cartsCollection.deleteOne(query);
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Cart not found" });
+    } else {
+      return res.json({ message: "Cart deleted successfully", result });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "An error occurred", error: error.message });
+  }
+};
+
 //add item to cart
 const addItemToCart = async (req, res) => {
   const userId = req.params.userId;
@@ -110,4 +129,4 @@ const removeitemFromCart = async (req, res) => {
   }
 };
 
-module.exports = { getAllCarts, addItemToCart, removeitemFromCart };
+module.exports = { getAllCarts, addItemToCart, removeitemFromCart, deleteAll };
