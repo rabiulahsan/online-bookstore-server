@@ -16,17 +16,17 @@ const getAllUsers = async (req, res) => {
 const postUser = async (req, res) => {
   const newUser = req.body;
   const query = { email: newUser.email };
-  console.log(query);
+  // console.log(query);
   try {
     // Check if the user already exists
     const exist = await usersCollection.findOne(query);
-    console.log(exist);
+    // console.log(exist);
     if (exist) {
       return res.status(409).send({ message: "User already exists" });
     }
     // Insert new user
     const result = await usersCollection.insertOne(newUser);
-    console.log(result);
+    // console.log(result);
     if (result.insertedId) {
       res.status(201).send({
         message: "User created successfully",
@@ -70,7 +70,7 @@ const getSingleUser = async (req, res) => {
 //get user role by email query
 const isUser = async (req, res) => {
   const email = req.query.email;
-
+  console.log(email);
   if (req.decoded.email !== email) {
     return res.send({ isUser: false });
   }
@@ -78,6 +78,7 @@ const isUser = async (req, res) => {
   const query = { email: email };
   const user = await usersCollection.findOne(query);
   const result = { isUser: user?.role === "user" };
+  console.log(result);
   res.send(result);
 };
 
